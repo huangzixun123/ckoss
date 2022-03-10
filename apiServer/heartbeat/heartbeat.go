@@ -12,11 +12,12 @@ import (
 var dataServers = make(map[string]time.Time)
 var mutex sync.Mutex
 
+// 创建消息队列绑定exchange
 func ListenHeartbeat() {
 	q := rabbitmq.New(os.Getenv("RABBITMQ_SERVER"))
 	defer q.Close()
 	q.Bind("apiServers")
-	c := q.Consume() // 返回收到的心跳：数据服务地址列表
+	c := q.Consume() // 返回收到的心跳：数据服务监听地址列表
 	go removeExpiredDataServer()
 	for msg := range c {
 		dataServer, e := strconv.Unquote(string(msg.Body))
@@ -31,10 +32,11 @@ func ListenHeartbeat() {
 
 func removeExpiredDataServer() {
 	for {
+		// 每隔10秒扫描一次dataServer
+		// 并删除10秒内没收到回应的dataServer
 		time.Sleep(5 * time.Second)
 		mutex.Lock()
 		for s, t := range dataServers {
-			// 如果上次收到数据服务的心跳跟现在系统的时间大于10秒，删除该数据服务
 			if t.Add(10 * time.Second).Before(time.Now()) {
 				delete(dataServers, s)
 			}
