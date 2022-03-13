@@ -12,8 +12,6 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
 	}
-	// /objects/object_name
-	// 切成 "" "object" "object_name"
 	info := Locate(strings.Split(r.URL.EscapedPath(), "/")[2])
 	if len(info) == 0 {
 		w.WriteHeader(http.StatusNotFound)

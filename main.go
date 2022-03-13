@@ -2,22 +2,19 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/url"
+	"net/http"
 )
 
 func main() {
-	u, err := url.Parse("http://example.com/x/y%2Fz")
-	if err != nil {
-		log.Fatal(err)
-	}
+	http.HandleFunc("/", HelloServer)
+	http.ListenAndServe(":8088", nil)
+}
 
-	fmt.Println(u.Scheme)
-	fmt.Println(u.ForceQuery)
-	fmt.Println(u.Fragment)
-	fmt.Println(u.Opaque)
-	fmt.Println(u.RawFragment)
-	fmt.Println("Path:", u.Path)
-	fmt.Println("RawPath:", u.RawPath)
-	fmt.Println("EscapedPath:", u.EscapedPath())
+func HelloServer(w http.ResponseWriter, r *http.Request) {
+	request, _ := http.NewRequest("PUT", "http://localhost:8089/server2/test", r.Body)
+	client := http.Client{}
+	rr, e := client.Do(request)
+	if e == nil && rr.StatusCode != http.StatusOK {
+		e = fmt.Errorf("dataServer return http code %d", rr.StatusCode)
+	}
 }
