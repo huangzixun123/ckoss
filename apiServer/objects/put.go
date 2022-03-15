@@ -8,6 +8,13 @@ import (
 	"strings"
 )
 
+/*
+	PUT /objects/object_name
+	Digest: SHA-256=<hash>
+	Content-Length: <size>
+	\r\n
+	<content of object>
+*/
 func put(w http.ResponseWriter, r *http.Request) {
 	hash := utils.GetHashFromHeader(r.Header)
 	if hash == "" {

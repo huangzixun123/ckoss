@@ -32,7 +32,7 @@ func ListenHeartbeat() {
 
 func removeExpiredDataServer() {
 	for {
-		// 每隔10秒扫描一次dataServer
+		// 每隔5秒扫描一次dataServer
 		// 并删除10秒内没收到回应的dataServer
 		time.Sleep(5 * time.Second)
 		mutex.Lock()
